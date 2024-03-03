@@ -65,7 +65,6 @@ const Home = ({ searchTerm, setImgId, setIsOpen }: any) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [images, setImages] = useState<Array<any>>();
   const [search, setSearch] = useState<boolean>(false);
-  const scrollRef = useRef<number>();
 
   const { isLoading, data, error } = useSWR(
     searchTerm ? searchTerm : pageNumber,
@@ -84,8 +83,6 @@ const Home = ({ searchTerm, setImgId, setIsOpen }: any) => {
       setSearch(false);
       setImages(data);
     }
-
-    window.scrollTo(0, scrollRef.current!);
   }, [data]);
 
   const observer: any = useRef();
@@ -98,28 +95,12 @@ const Home = ({ searchTerm, setImgId, setIsOpen }: any) => {
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
           setPageNumber((prevPageNumber) => prevPageNumber + 1);
-          scrollRef.current = window.scrollY;
         }
       });
       if (node) observer?.current?.observe(node);
     },
     [isLoading]
   );
-
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          height: '80vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <h2 style={{ color: '#495464' }}>Loading...</h2>
-      </div>
-    );
-  }
 
   if (error) {
     return <h2>{error.message}</h2>;
